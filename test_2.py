@@ -15,7 +15,7 @@ toolbox.register("attr_materia", random.choice, data['Código'].tolist())
 toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_materia, n=3)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
-dias_libres = ["Lunes", "Martes", "Jueves"]
+dias_libres = ["Lunes", "Miércoles", "Jueves", "Viernes"]
 preferencia_carga = "Practica"
 
 # Define la función de aptitud
@@ -35,26 +35,26 @@ def evaluar(individual):
             for dia in materia["Día"].values[0]:
                 if dia not in days or code in days[dia]:
                     # Si el día no está en los días libres, devuelve una aptitud muy baja
-                    return -100,
+                    score -= 150
                 else:
                     # Si no, añade la materia al conjunto de ese día
                     days[dia].add(code)
 
             # Verifica si el día de la materia está en los días libres del estudiante
             if any(dia in dias_libres for dia in materia["Día"].values[0]):
-                score += 20
+                score += 30
 
             # Aumenta el puntaje según la preferencia de carga del estudiante
             if preferencia_carga == "Practica":
-                if materia["Teoria"].values[0] == "alta":
-                    score += 5
                 if materia["Practica"].values[0] == "alta":
+                    score += 10
+                if materia["Teoria"].values[0] == "alta":
                     score -= 10
             elif preferencia_carga == "Practica":
                 if materia["Practica"].values[0] == "alta":
                     score += 10
                 if materia["Teoria"].values[0] == "alta":
-                    score -= 5
+                    score -= 10
 
             # Aumenta el puntaje según el puntaje del profesor
             score += (float(materia["Puntaje"].values[0].replace(",", "."))/10)
@@ -65,7 +65,7 @@ def evaluar(individual):
 
     # Penaliza si no se incluye una materia troncal
     if not troncal_included:
-        score -= 30
+        score -= 50
 
     return score,
 
