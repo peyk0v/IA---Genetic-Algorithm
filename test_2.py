@@ -2,21 +2,34 @@ from deap import base, creator, tools, algorithms
 import numpy
 import pandas as pd
 import random
+import os
+import matplotlib.pyplot as plt
 
 # Carga los datos del JSON
-data = pd.read_json('test.json')
+data = pd.read_json("test.json")
 
-# Define el individuo
-creator.create("FitnessMax", base.Fitness, weights=(1.0,))
-creator.create("Individual", list, fitness=creator.FitnessMax)
+
+def setup_deap():
+    if not hasattr(creator, "FitnessMax"):
+        creator.create("FitnessMax", base.Fitness, weights=(1.0,))
+    if not hasattr(creator, "Individual"):
+        creator.create("Individual", list, fitness=creator.FitnessMax)
+
+
+setup_deap()
 
 toolbox = base.Toolbox()
-toolbox.register("attr_materia", random.choice, data['Código'].tolist())
-toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_materia, n=3)
+toolbox.register("attr_materia", random.choice, data["Código"].tolist())
+toolbox.register(
+    "individual", tools.initRepeat, creator.Individual, toolbox.attr_materia, n=3
+)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
-dias_libres = ["Lunes", "Miércoles", "Jueves", "Viernes"]
+
+# Elecciones del Alumno
+dias_libres = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
 preferencia_carga = "Practica"
+
 
 # Define la función de aptitud
 def evaluar(individual):
@@ -48,16 +61,20 @@ def evaluar(individual):
             if preferencia_carga == "Practica":
                 if materia["Practica"].values[0] == "alta":
                     score += 10
-                if materia["Teoria"].values[0] == "alta":
+                if materia["Practica"].values[0] == "baja":
                     score -= 10
-            elif preferencia_carga == "Practica":
-                if materia["Practica"].values[0] == "alta":
+                if materia["Teoria"].values[0] == "alta":
+                    score -= 5
+            elif preferencia_carga == "Teoria":
+                if materia["Teoria"].values[0] == "alta":
                     score += 10
-                if materia["Teoria"].values[0] == "alta":
+                if materia["Teoria"].values[0] == "baja":
                     score -= 10
+                if materia["Practica"].values[0] == "alta":
+                    score -= 5
 
             # Aumenta el puntaje según el puntaje del profesor
-            score += (float(materia["Puntaje"].values[0].replace(",", "."))/10)
+            score += float(materia["Puntaje"].values[0].replace(",", ".")) / 10
 
             # Verifica si la materia es troncal
             if materia["Tipo"].values[0] == "Troncal":
@@ -67,9 +84,11 @@ def evaluar(individual):
     if not troncal_included:
         score -= 50
 
-    return score,
+    return (score,)
+
 
 toolbox.register("evaluate", evaluar)
+
 
 # Define una función para obtener las materias seleccionadas de un individuo
 def get_materias(individual):
@@ -77,13 +96,15 @@ def get_materias(individual):
     for code in individual:
         materia = data[data["Código"] == code]
         if not materia.empty:
-            materias_seleccionadas.append(materia.to_dict('records')[0])
+            materias_seleccionadas.append(materia.to_dict("records")[0])
     return materias_seleccionadas
+
 
 def has_common_day(list1, list2):
     set1 = set(list1)
     set2 = set(list2)
     return len(set1.intersection(set2)) > 0
+
 
 def isValid(individual):
     # Initialize a dictionary to map each day to a list of subject codes
@@ -100,8 +121,9 @@ def isValid(individual):
                 return False
             # If the day is not occupied, schedule the subject on this day
             days[day].append(subject_code)
-        # print(days)     
+        # print(days)
     return True
+
 
 def mutUnique(individual, indpb):
     for i in range(len(individual)):
@@ -109,15 +131,19 @@ def mutUnique(individual, indpb):
             swap_idx = random.randint(0, len(individual) - 1)
             while swap_idx == i:
                 swap_idx = random.randint(0, len(individual) - 1)
-            
+
             # Swap the subjects
             individual[i], individual[swap_idx] = individual[swap_idx], individual[i]
-            
+
             # Check if the new combination is valid
             if not isValid(individual):
                 # If the new combination is not valid, undo the swap
-                individual[i], individual[swap_idx] = individual[swap_idx], individual[i]
-    return individual,
+                individual[i], individual[swap_idx] = (
+                    individual[swap_idx],
+                    individual[i],
+                )
+    return (individual,)
+
 
 def cxTwoPoint(ind1, ind2):
     size = min(len(ind1), len(ind2))
@@ -125,15 +151,22 @@ def cxTwoPoint(ind1, ind2):
     cxpoint2 = random.randint(1, size - 1)
     if cxpoint2 >= cxpoint1:
         cxpoint2 += 1
-    else: # Swap the two cx points
+    else:  # Swap the two cx points
         cxpoint1, cxpoint2 = cxpoint2, cxpoint1
 
-    ind1[cxpoint1:cxpoint2], ind2[cxpoint1:cxpoint2] = ind2[cxpoint1:cxpoint2], ind1[cxpoint1:cxpoint2]
+    ind1[cxpoint1:cxpoint2], ind2[cxpoint1:cxpoint2] = (
+        ind2[cxpoint1:cxpoint2],
+        ind1[cxpoint1:cxpoint2],
+    )
 
     if not isValid(ind1) or not isValid(ind2):
-        ind1[cxpoint1:cxpoint2], ind2[cxpoint1:cxpoint2] = ind2[cxpoint1:cxpoint2], ind1[cxpoint1:cxpoint2]
+        ind1[cxpoint1:cxpoint2], ind2[cxpoint1:cxpoint2] = (
+            ind2[cxpoint1:cxpoint2],
+            ind1[cxpoint1:cxpoint2],
+        )
 
     return ind1, ind2
+
 
 toolbox.register("mate", tools.cxTwoPoint)
 # toolbox.register("mutate", tools.mutUniformInt, low=0, up=len(data)-1, indpb=0.1)
@@ -141,6 +174,7 @@ toolbox.register("mutate", mutUnique, indpb=0.1)
 # toolbox.register("mate", cxUnique)
 
 toolbox.register("select", tools.selTournament, tournsize=3)
+
 
 def main():
     pop = toolbox.population(n=100)
@@ -150,9 +184,19 @@ def main():
     stats.register("min", numpy.min)
     stats.register("max", numpy.max)
 
-    pop, log = algorithms.eaSimple(pop, toolbox, cxpb=0.7, mutpb=0.3, ngen=40, stats=stats, halloffame=hof, verbose=True)
+    pop, log = algorithms.eaSimple(
+        pop,
+        toolbox,
+        cxpb=0.7,
+        mutpb=0.5,
+        ngen=25,
+        stats=stats,
+        halloffame=hof,
+        verbose=True,
+    )
 
     return pop, log, hof
+
 
 if __name__ == "__main__":
     pop, log, hof = main()
@@ -164,3 +208,22 @@ if __name__ == "__main__":
     print("Materias seleccionadas:")
     for materia in materias:
         print(materia)
+
+    gen = log.select("gen")
+    avg = log.select("avg")
+    min_ = log.select("min")
+    max_ = log.select("max")
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(gen, avg, label="average")
+    plt.plot(gen, min_, label="minimum")
+    plt.plot(gen, max_, label="maximum")
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+    plt.legend(loc="lower right")
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    plot_path = os.path.join(script_dir, "performance_plot.png")
+    plt.savefig(plot_path)
+
+    plt.show()
