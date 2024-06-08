@@ -51,7 +51,7 @@
     "Puntaje": "83,77",
     "Teoria": "baja",
     "Practica": "alta",
-    "Tipo": "Electiva",
+    "Tipo": "Troncal",
     "Turno": "Noche"
   },
   {
@@ -79,7 +79,7 @@
   {
     "Código": 82014,
     "Materia": "Tecnologías aplicadas a soluciones de Datos",
-    "Día": ["Martes", "Jueves"],
+    "Día": ["Martes"],
     "Profesor": "Berruezo Mariano",
     "Puntaje": "97,12",
     "Teoria": "baja",
@@ -128,7 +128,7 @@
     "Puntaje": "95,23",
     "Teoria": "media",
     "Practica": "alta",
-    "Tipo": "Electiva",
+    "Tipo": "Troncal",
     "Turno": "Noche"
   },
   {
@@ -172,7 +172,7 @@
     "Puntaje": "96,04",
     "Teoria": "alta",
     "Practica": "media",
-    "Tipo": "Electiva",
+    "Tipo": "Troncal",
     "Turno": "Noche"
   },
   {
@@ -189,7 +189,7 @@
   {
     "Código": 82085,
     "Materia": "Pericias Informáticas",
-    "Día": ["Jueves", "Viernes"],
+    "Día": ["Jueves"],
     "Profesor": "Politi Analia",
     "Puntaje": "79,85",
     "Teoria": "media",
@@ -216,7 +216,7 @@
     "Puntaje": "88,29",
     "Teoria": "baja",
     "Practica": "baja",
-    "Tipo": "Electiva",
+    "Tipo": "Troncal",
     "Turno": "Noche"
   },
   {
@@ -244,9 +244,9 @@
   {
     "Código": 951661,
     "Materia": "Ingles Comunicacional II",
-    "Día": ["Lunes", "Jueves"],
+    "Día": ["Lunes"],
     "Profesor": "Almandoz, Patricia Ferrari, Puntaje",
-    "Puntaje": "95,57-94,7",
+    "Puntaje": "95,57",
     "Teoria": "baja",
     "Practica": "alta",
     "Tipo": "Electiva",
@@ -277,12 +277,12 @@
   {
     "Código": 82015,
     "Materia": "Sistemas Embebidos Aplicados a Robotica",
-    "Día": ["Miércoles"],
+    "Día": ["Sábado"],
     "Profesor": "Civale Omar",
     "Puntaje": "78,16",
     "Teoria": "baja",
     "Practica": "baja",
-    "Tipo": "Electiva",
+    "Tipo": "Troncal",
     "Turno": "Noche"
   },
   {
