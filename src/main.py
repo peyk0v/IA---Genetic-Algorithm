@@ -6,7 +6,7 @@ import os
 import matplotlib.pyplot as plt
 
 # Carga los datos del JSON
-data = pd.read_json("data.json")
+data = pd.read_json("../data.json")
 
 
 def setup_deap():
@@ -18,17 +18,21 @@ def setup_deap():
 
 setup_deap()
 
+# Elecciones del Alumno
+dias_libres = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
+preferencia_carga = "Practica"
+cantidad_materias = 5
+
+# Crea la caja de herramientas
 toolbox = base.Toolbox()
 toolbox.register("attr_materia", random.choice, data["Código"].tolist())
 toolbox.register(
-    "individual", tools.initRepeat, creator.Individual, toolbox.attr_materia, n=2
+    "individual", tools.initRepeat, creator.Individual, toolbox.attr_materia, n=cantidad_materias
 )
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 
-# Elecciones del Alumno
-dias_libres = ["Lunes", "Martes", "Jueves", "Sábado"]
-preferencia_carga = "Practica"
+
 
 
 # Define la función de aptitud
@@ -48,14 +52,15 @@ def evaluar(individual):
             for dia in materia["Día"].values[0]:
                 if dia not in days or code in days[dia]:
                     # Si el día no está en los días libres, devuelve una aptitud muy baja
-                    score -= 150
+                    score -= 100
                 else:
                     # Si no, añade la materia al conjunto de ese día
                     days[dia].add(code)
+                    score += 30
 
             # Verifica si el día de la materia está en los días libres del estudiante
-            if any(dia in dias_libres for dia in materia["Día"].values[0]):
-                score += 30
+            # if any(dia in dias_libres for dia in materia["Día"].values[0]):
+                
 
             # Aumenta el puntaje según la preferencia de carga del estudiante
             if preferencia_carga == "Practica":
@@ -84,6 +89,9 @@ def evaluar(individual):
     if not troncal_included:
         score -= 50
 
+    if not isValid(individual):
+        score -=100  # return a very low score if the schedule is not valid
+
     return (score,)
 
 
@@ -101,30 +109,42 @@ def get_materias(individual):
 
 
 def has_common_day(list1, list2):
-    print(list1)
-    print(list2)
-    return True
-    # set1 = set(list1)
-    # set2 = set(list2)
-    # return len(set1.intersection(set2)) > 0
+    # Ensure list1 and list2 are lists
+    if not isinstance(list1, list):
+        list1 = [list1]
+    if not isinstance(list2, list):
+        list2 = [list2]
+    
+    # Convert the lists to sets
+    set1 = set(list1)
+    set2 = set(list2)
+    
+    # Return True if the intersection of the sets is not empty (i.e., the subjects overlap)
+    return len(set1.intersection(set2)) > 0
 
 
 def isValid(individual):
-    # Initialize a dictionary to map each day to a list of subject codes
+    # Initialize a dictionary to map each day to a list of subjects
     days = {day: [] for day in dias_libres}
     for subject_code in individual:
         # Convert the subject code to the corresponding subject dictionary
         subject = data[data["Código"] == subject_code].iloc[0].to_dict()
+        # Ensure that subject["Día"] is a list
+        if not isinstance(subject["Día"], list):
+            subject["Día"] = [subject["Día"]]
         for day in subject["Día"]:
             # Check if the day is a free day
             if day not in dias_libres:
                 return False
-            # Check if the day is already occupied
-            if days[day]:
-                return False
-            # If the day is not occupied, schedule the subject on this day
-            days[day].append(subject_code)
-        # print(days)
+            # Check if there is already a subject scheduled for the day
+            for existing_subject in days[day]:
+                # Ensure that existing_subject["Día"] is a list
+                if not isinstance(existing_subject["Día"], list):
+                    existing_subject["Día"] = [existing_subject["Día"]]
+                if existing_subject["Código"] != subject_code and has_common_day(existing_subject["Día"], subject["Día"]):
+                    return False
+            # Add the current subject to the day's list
+            days[day].append(subject)
     return True
 
 
@@ -193,7 +213,7 @@ def main():
         pop,
         toolbox,
         cxpb=0.7,
-        mutpb=0.5,
+        mutpb=0.3,
         ngen=25,
         stats=stats,
         halloffame=hof,
@@ -207,9 +227,7 @@ if __name__ == "__main__":
     pop, log, hof = main()
     best_ind = hof[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
-    print("About to call get_materias()")
     materias = get_materias(best_ind)
-    print("Finished calling get_materias()")
     print("Materias seleccionadas:")
     for materia in materias:
         print(materia)
@@ -226,7 +244,7 @@ if __name__ == "__main__":
     plt.xlabel("Generation")
     plt.ylabel("Fitness")
     plt.legend(loc="lower right")
-
+   
     script_dir = os.path.dirname(os.path.abspath(__file__))
     plot_path = os.path.join(script_dir, "performance_plot.png")
     plt.savefig(plot_path)
