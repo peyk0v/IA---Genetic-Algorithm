@@ -1,0 +1,40 @@
+{
+  "Best_individual": [82084, 82016, 82080],
+  "Score": 146.526,
+  "Materias_seleccionadas": [
+    {
+      "Código": 82084,
+      "Materia": "Modelos Organizacionales",
+      "Día": ["Martes"],
+      "Profesor": "Suarez Claudia",
+      "Puntaje": "92,48",
+      "Teoria": "media",
+      "Practica": "alta",
+      "Tipo": "Electiva",
+      "Turno": "Noche"
+    },
+    {
+      "Código": 82016,
+      "Materia": "Seguridad en Aplicaciones Web",
+      "Día": ["Jueves"],
+      "Profesor": "Vilanova Gonzalo",
+      "Puntaje": "89,01",
+      "Teoria": "baja",
+      "Practica": "alta",
+      "Tipo": "Electiva",
+      "Turno": "Noche"
+    },
+    {
+      "Código": 82080,
+      "Materia": "Inteligencia de Negocios",
+      "Día": ["Lunes"],
+      "Profesor": "Cigluti Pablo",
+      "Puntaje": "83,77",
+      "Teoria": "baja",
+      "Practica": "alta",
+      "Tipo": "Troncal",
+      "Turno": "Noche"
+    }
+  ]
+}
+

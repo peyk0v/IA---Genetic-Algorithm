@@ -1,0 +1,40 @@
+{
+  "Best_individual": [82044, 82108, 82110],
+  "Score": 148.63,
+  "Materias_seleccionadas": [
+    {
+      "Código": 82044,
+      "Materia": "Tecnologías avanzadas en Redes",
+      "Día": ["Martes"],
+      "Profesor": "Koval Federico",
+      "Puntaje": "95,42",
+      "Teoria": "alta",
+      "Practica": "baja",
+      "Tipo": "Electiva",
+      "Turno": "Noche"
+    },
+    {
+      "Código": 82108,
+      "Materia": "Neurociencia Aplicada",
+      "Día": ["Jueves"],
+      "Profesor": "Perez Claudia",
+      "Puntaje": "96,04",
+      "Teoria": "alta",
+      "Practica": "media",
+      "Tipo": "Troncal",
+      "Turno": "Noche"
+    },
+    {
+      "Código": 82110,
+      "Materia": "Gestión de la Transformación Organizacional",
+      "Día": ["Lunes"],
+      "Profesor": "Rondolini Carolina",
+      "Puntaje": "94,84",
+      "Teoria": "alta",
+      "Practica": "media",
+      "Tipo": "Electiva",
+      "Turno": "Noche"
+    }
+  ]
+}
+

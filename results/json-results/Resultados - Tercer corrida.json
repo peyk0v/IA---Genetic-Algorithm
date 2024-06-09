@@ -1,0 +1,29 @@
+{
+  "Best_individual": [82080, 82093],
+  "Score": 97.655,
+  "Materias_seleccionadas": [
+    {
+      "Código": 82080,
+      "Materia": "Inteligencia de Negocios",
+      "Día": ["Lunes"],
+      "Profesor": "Cigluti Pablo",
+      "Puntaje": "83,77",
+      "Teoria": "baja",
+      "Practica": "alta",
+      "Tipo": "Troncal",
+      "Turno": "Noche"
+    },
+    {
+      "Código": 82093,
+      "Materia": "Comunicación y comercialización de productos y servicios de IT",
+      "Día": ["Jueves"],
+      "Profesor": "Martinez Liliana",
+      "Puntaje": "92,78",
+      "Teoria": "media",
+      "Practica": "alta",
+      "Tipo": "Electiva",
+      "Turno": "Noche"
+    }
+  ]
+}
+
